@@ -4,20 +4,10 @@ import React, { useState } from 'react';
 
 import usersFromServer from './api/users';
 import todosFromServer from './api/todos';
-
-type User = {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-};
-
-type Todo = {
-  id: number;
-  title: string;
-  completed: boolean;
-  userId: number;
-};
+import { TodoList } from './components/TodoList';
+import { User } from './types';
+import { Todo } from './types';
+import { TodoWithUser } from './types';
 
 const DEFAULT_TODO_VALUE: Todo = {
   id: 0,
@@ -80,7 +70,7 @@ export const App: React.FC = () => {
     return usersFromServer.find(user => user.id === userId) || null;
   };
 
-  const visibleTodos = todos.map(todo => ({
+  const visibleTodos: TodoWithUser[] = todos.map(todo => ({
     ...todo,
     user: userById(todo.userId),
   }));
@@ -128,22 +118,7 @@ export const App: React.FC = () => {
           Add
         </button>
       </form>
-
-      <section className="TodoList">
-        {visibleTodos.map(todo => (
-          <article
-            key={todo.id}
-            data-id={todo.id}
-            className={`TodoInfo ${todo.completed ? 'TodoInfo--completed' : ''}`}
-          >
-            <h2 className="TodoInfo__title">{todo.title}</h2>
-
-            <a className="UserInfo" href={`mailto:${todo.user?.email}`}>
-              {todo.user?.name}
-            </a>
-          </article>
-        ))}
-      </section>
+      <TodoList todos={visibleTodos} />
     </div>
   );
 };
